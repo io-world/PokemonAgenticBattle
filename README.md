@@ -2,6 +2,12 @@
 
 Claude vs GPT in a 5-round Pokemon stat battle, powered by LangGraph, FastMCP, and PokeAPI.
 
+> The PokeAPI calls could have been plain async functions inside a LangGraph node — the MCP server is intentionally here to practice the MCP pattern (tool exposure, client/server separation, FastMCP setup) rather than out of necessity.
+
+## About
+
+This project is a hands-on way to learn how modern AI agent frameworks fit together. Two competing LLMs — Anthropic's **Claude** and OpenAI's **ChatGPT** — each act as independent agents that pick a team of Pokemon and argue their strategy. The battle is orchestrated by **LangGraph**, a framework built on top of LangChain that lets you model agent workflows as stateful graphs with nodes (steps) and edges (transitions), including loops and conditional branching. Real Pokemon stats are fetched from the public PokeAPI through a **FastMCP** server, giving both agents access to the same grounded data. The result is a concrete, fun example of multi-agent coordination, stateful graph execution, and LLM tool use — all in one project.
+
 ## Setup
 
 1. Install dependencies:

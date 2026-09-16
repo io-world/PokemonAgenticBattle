@@ -14,3 +14,6 @@ wheels/
 
 # Secrets
 .env
+
+# Battle logs
+logs/*.log

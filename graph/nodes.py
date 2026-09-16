@@ -16,11 +16,15 @@ Design rules:
   - No side effects outside of state updates and stdout logging
 """
 
+import logging
+
 from fastmcp import Client
 
 from graph.state import BattleState
 from agents.agent_claude import ClaudeAgent
 from agents.agent_gpt import GPTAgent
+
+logger = logging.getLogger(__name__)
 
 MCP_URL = "http://localhost:8000/mcp"
 
@@ -100,13 +104,13 @@ async def build_team_claude(state: BattleState) -> dict:
     Claude agent opens its own MCP client, picks 5 Pokemon, hydrates stats.
     Writes result to state["team_claude"].
     """
-    print("\n[Node] build_team_claude — Claude is selecting its team...")
+    logger.info("\n[Node] build_team_claude — Claude is selecting its team...")
 
     async with Client(MCP_URL) as mcp_client:
         agent = ClaudeAgent(mcp_client=mcp_client)
         team = await agent.build_team()
 
-    print(f"[Node] build_team_claude — Team built: {[p['name'] for p in team]}")
+    logger.info(f"[Node] build_team_claude — Team built: {[p['name'] for p in team]}")
     return {"team_claude": team}
 
 
@@ -120,13 +124,13 @@ async def build_team_gpt(state: BattleState) -> dict:
     Writes result to state["team_gpt"].
     Option B: separate Client instance from Claude's — never shared.
     """
-    print("\n[Node] build_team_gpt — GPT is selecting its team...")
+    logger.info("\n[Node] build_team_gpt — GPT is selecting its team...")
 
     async with Client(MCP_URL) as mcp_client:
         agent = GPTAgent(mcp_client=mcp_client)
         team = await agent.build_team()
 
-    print(f"[Node] build_team_gpt — Team built: {[p['name'] for p in team]}")
+    logger.info(f"[Node] build_team_gpt — Team built: {[p['name'] for p in team]}")
     return {"team_gpt": team}
 
 
@@ -141,18 +145,18 @@ async def battle_round(state: BattleState) -> dict:
     Pokemon are matched by index: round N uses pokemon[N-1] from each team.
     Appends a round_result dict to state["round_results"] and increments current_round.
     """
-    print("-" * 50)
+    logger.info("-" * 50)
     round_num = state["current_round"]
     idx = round_num - 1  # 0-indexed
 
     claude_mon = state["team_claude"][idx]
     gpt_mon = state["team_gpt"][idx]
 
-    print(f"\n[Node] battle_round {round_num} — {claude_mon['name']} vs {gpt_mon['name']}")
+    logger.info(f"\n[Node] battle_round {round_num} — {claude_mon['name']} vs {gpt_mon['name']}")
 
     result = _compute_round_result(round_num, claude_mon, gpt_mon)
 
-    print(
+    logger.info(
         f"[Node] battle_round {round_num} — "
         f"Stat: {result['stat']} | "
         f"Claude {result['claude_stat_value']} vs GPT {result['gpt_stat_value']} | "
@@ -160,7 +164,7 @@ async def battle_round(state: BattleState) -> dict:
     )
 
     new_round = round_num + 1
-    print(f"[Node] battle_round — advancing to round {new_round}")
+    logger.info(f"[Node] battle_round — advancing to round {new_round}")
 
     return {
         "round_results": state.get("round_results", []) + [result],
@@ -189,11 +193,11 @@ async def result_node(state: BattleState) -> dict:
     else:
         winner = "Tie"
 
-    print("\n" + "=" * 60)
-    print("BATTLE COMPLETE")
-    print("=" * 60)
-    print(f"Claude wins: {claude_wins}  |  GPT wins: {gpt_wins}  |  Ties: {ties}")
-    print(f"OVERALL WINNER: {winner}")
-    print("=" * 60)
+    logger.info("\n" + "=" * 60)
+    logger.info("BATTLE COMPLETE")
+    logger.info("=" * 60)
+    logger.info(f"Claude wins: {claude_wins}  |  GPT wins: {gpt_wins}  |  Ties: {ties}")
+    logger.info(f"OVERALL WINNER: {winner}")
+    logger.info("=" * 60)
 
     return {"winner": winner}
