@@ -21,10 +21,7 @@ from typing import Any
 import openai
 from fastmcp import Client
 
-try:
-    from agents.config import chatgpt_api_key
-except ImportError:
-    from config import chatgpt_api_key
+
 
 
 # ---------------------------------------------------------------------------
@@ -66,7 +63,7 @@ class GPTAgent:
             api_key: OpenAI API key. If None, uses OPENAI_API_KEY env var.
         """
         self.mcp_client = mcp_client
-        self.openai = openai.OpenAI(api_key=api_key or chatgpt_api_key)
+        self.openai = openai.OpenAI(api_key=api_key)
         self.team_name = "GPT"
 
     # ------------------------------------------------------------------

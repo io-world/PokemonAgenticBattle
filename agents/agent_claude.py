@@ -21,10 +21,7 @@ from typing import Any
 import anthropic
 from fastmcp import Client
 
-try:
-    from agents.config import claude_api_key
-except ImportError:
-    from config import claude_api_key
+
 
 
 # ---------------------------------------------------------------------------
@@ -66,7 +63,7 @@ class ClaudeAgent:
             api_key: Anthropic API key. Defaults to the key in agents/config.py.
         """
         self.mcp_client = mcp_client
-        self.anthropic = anthropic.Anthropic(api_key=api_key or claude_api_key)
+        self.anthropic = anthropic.Anthropic(api_key=api_key)
         self.team_name = "Claude"
 
     # ------------------------------------------------------------------

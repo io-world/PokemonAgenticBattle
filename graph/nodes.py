@@ -21,7 +21,6 @@ from fastmcp import Client
 from graph.state import BattleState
 from agents.agent_claude import ClaudeAgent
 from agents.agent_gpt import GPTAgent
-from agents.config import claude_api_key, chatgpt_api_key
 
 MCP_URL = "http://localhost:8000/mcp"
 
@@ -104,10 +103,7 @@ async def build_team_claude(state: BattleState) -> dict:
     print("\n[Node] build_team_claude — Claude is selecting its team...")
 
     async with Client(MCP_URL) as mcp_client:
-        agent = ClaudeAgent(
-            mcp_client=mcp_client,
-            api_key=claude_api_key,
-        )
+        agent = ClaudeAgent(mcp_client=mcp_client)
         team = await agent.build_team()
 
     print(f"[Node] build_team_claude — Team built: {[p['name'] for p in team]}")
@@ -127,10 +123,7 @@ async def build_team_gpt(state: BattleState) -> dict:
     print("\n[Node] build_team_gpt — GPT is selecting its team...")
 
     async with Client(MCP_URL) as mcp_client:
-        agent = GPTAgent(
-            mcp_client=mcp_client,
-            api_key=chatgpt_api_key,
-        )
+        agent = GPTAgent(mcp_client=mcp_client)
         team = await agent.build_team()
 
     print(f"[Node] build_team_gpt — Team built: {[p['name'] for p in team]}")
